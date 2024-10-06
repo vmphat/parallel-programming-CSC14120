@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// __global__: Đây là hàm chạy song song trên GPU
 __global__ void helloFromGPU()
 {
     printf("Hello from GPU, threadId %d!\n", threadIdx.x);
