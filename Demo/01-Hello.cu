@@ -1,6 +1,8 @@
 #include <stdio.h>
 
 // __global__: Đây là hàm chạy song song trên GPU
+// __global__: define kernel function
+//      => Kernel function must return void
 __global__ void helloFromGPU()
 {
     printf("Hello from GPU, threadId %d!\n", threadIdx.x);

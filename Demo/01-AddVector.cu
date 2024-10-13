@@ -51,15 +51,22 @@ struct GpuTimer
 
 void addVecOnHost(float* in1, float* in2, float* out, int n)
 {
-    for (int i = 0; i < n; i++)
-        out[i] = in1[i] + in2[i];    
+    // for (int i = 0; i < n; i++)
+    //     out[i] = in1[i] + in2[i];
+	for (int i = 0; i < n; i++) {
+		out[i] = in1[i] + in2[i];
+	}
 }
 
 __global__ void addVecOnDevice(float* in1, float* in2, float* out, int n)
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < n)
-        out[i] = in1[i] + in2[i];
+    // int i = blockIdx.x * blockDim.x + threadIdx.x;
+    // if (i < n)
+    //     out[i] = in1[i] + in2[i];
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	if (i < n) {
+		out[i] = in1[i] + in2[i];
+	}
 }
 
 void addVec(float* in1, float* in2, float* out, int n, 
@@ -75,6 +82,7 @@ void addVec(float* in1, float* in2, float* out, int n,
 	}
 	else // Use device
 	{
+		// In thông tin card màn hìn
 		cudaDeviceProp devProp;
 		cudaGetDeviceProperties(&devProp, 0);
 		printf("GPU name: %s\n", devProp.name);
@@ -83,30 +91,42 @@ void addVec(float* in1, float* in2, float* out, int n,
 		// Host allocates memories on device
 		float *d_in1, *d_in2, *d_out;
         size_t nBytes = n * sizeof(float);
-        CHECK(cudaMalloc(&d_in1, nBytes));
-        CHECK(cudaMalloc(&d_in2, nBytes));
-        CHECK(cudaMalloc(&d_out, nBytes));
+        // CHECK(cudaMalloc(&d_in1, nBytes));
+        // CHECK(cudaMalloc(&d_in2, nBytes));
+        // CHECK(cudaMalloc(&d_out, nBytes));
+		CHECK(cudaMalloc(&d_in1, nBytes));
+		CHECK(cudaMalloc(&d_in2, nBytes));
+		CHECK(cudaMalloc(&d_out, nBytes));
 
 		// Host copies data to device memories
-        CHECK(cudaMemcpy(d_in1, in1, nBytes, cudaMemcpyHostToDevice));
-        CHECK(cudaMemcpy(d_in2, in2, nBytes, cudaMemcpyHostToDevice));
+        // CHECK(cudaMemcpy(d_in1, in1, nBytes, cudaMemcpyHostToDevice));
+        // CHECK(cudaMemcpy(d_in2, in2, nBytes, cudaMemcpyHostToDevice));
+		CHECK(cudeMemcpy(d_in1, in1, nBytes, cudaMemcpyHostToDevice));
+		CHECK(cudeMemcpy(d_in2, in2, nBytes, cudaMemcpyHostToDevice));
 
 		// Host invokes kernel function to add vectors on device
-		dim3 blockSize(512); // For simplicity, you can temporarily view blockSize as a number
-		dim3 gridSize((n - 1) / blockSize.x + 1); // Similarity, view gridSize as a number
-		
+		// dim3 blockSize(512); // For simplicity, you can temporarily view blockSize as a number
+		// dim3 gridSize((n - 1) / blockSize.x + 1); // Similarity, view gridSize as a number
+		dim3 blockSize(256);
+		dim3 gridSize((n - 1) / blockSize.x + 1);
+
 		timer.Start();
-		addVecOnDevice<<<gridSize, blockSize>>>(d_in1, d_in2, d_out, n); 
+		// addVecOnDevice<<<gridSize, blockSize>>>(d_in1, d_in2, d_out, n); 
+		addVecOnDevice<<<gridSize, blockSize>>>(d_in1, d_in2, d_out, n);
 		
 		cudaDeviceSynchronize(); 
 		timer.Stop();
 		// Host copies result from device memory
-        CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));
+        // CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));
+		CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));
 
 		// Free device memories
-        CHECK(cudaFree(d_in1));
-        CHECK(cudaFree(d_in2));
-        CHECK(cudaFree(d_out));
+        // CHECK(cudaFree(d_in1));
+        // CHECK(cudaFree(d_in2));
+        // CHECK(cudaFree(d_out));
+		CHECK(cudaFree(d_in1));
+		CHECK(cudaFree(d_in2));
+		CHECK(cudaFree(d_out));
 	}
 	
 	float time = timer.Elapsed();
@@ -118,6 +138,7 @@ int main(int argc, char ** argv)
 {
     float *in1, *in2; // Input vectors
     float *out,*correctOut;  // Output vector
+	// `correctOut`: kết quả chạy tuần tự trên CPU
 
     
     // Allocate memories for in1, in2, out
