@@ -19,7 +19,7 @@ struct GpuTimer
 
 	GpuTimer()
 	{
-		cudaEventCreate(&start);
+	  	cudaEventCreate(&start);
 		cudaEventCreate(&stop);
 	}
 
@@ -137,7 +137,7 @@ void addVec(float* in1, float* in2, float* out, int n,
 int main(int argc, char ** argv)
 {
     float *in1, *in2; // Input vectors
-    float *out,*correctOut;  // Output vector
+    float *out, *correctOut;  // Output vector
 	// `correctOut`: kết quả chạy tuần tự trên CPU
 
     
