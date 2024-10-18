@@ -56,6 +56,7 @@ __global__ void addMatKernel(int *in1, int *in2, int nRows, int nCols,
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
 
+	// Chỉ tính cho những phần tử nằm trong ma trận
     if (r < nRows && c < nCols)
     {
         int i = r * nCols + c;
@@ -125,8 +126,8 @@ int main(int argc, char ** argv)
     int *out, *correctOut; // Output matrix
 
     // Input data into nRows and nCols
-    nRows = 1 << 11 + 1;
-    nCols = 1 << 12 + 1;
+    nRows = 1 << 11 + 1; // 2^11 + 1
+    nCols = 1 << 12 + 1; // 2^12 + 1
     printf("# rows = %d, # cols = %d\n\n", nRows, nCols);
 
     // Allocate memories for in1, in2, out

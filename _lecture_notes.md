@@ -82,3 +82,62 @@
   - Nộp file notebook thầy cung cấp sẵn
   - Nộp source code và nộp file notebook
   - Deadline: 1 tuần
+
+# Introduction to CUDA C/C++ (Part II)
+
+- Ôn tập lại quiz 1
+- Ôn tập lại HW0
+  - gridSize = (n/2-1)/blockDim.x + 1
+
+## Adding 2 matrices
+
+- Chiều 1,2,3 tương ứng: x,y,z
+  - Nếu z=1 thì là 2 chiều
+  - Trục column: x
+  - Trục row: y
+    => Luôn chọn kiểu này để tối ưu hiệu năng CUDA
+
+## RGB to Grayscale
+
+- Công thức cộng ba màu chia trung bình cũng được nhưng hình ảnh sẽ không sắc nét
+  => Ý tưởng: Màu nào dễ nhận diện sẽ có trọng số cao hơn (green >> red >> blue)
+- Input: mỗi phần tử là bộ ba số (r,g,b)
+- Output: mỗi phần tử là 1 con số
+
+## Blurring image
+
+- Làm mờ có khả năng lọc nhiễu cho ảnh, đặc biệt là nhiễu li ti
+- Làm mờ theo từng kênh màu
+
+## Note
+
+- Làm bài Lab (HW1)
+
+```
+- Câu 1: RGB-2-Grayscale
+  - Đọc file .pnm (text file):
+    - R,G,B là 3 con số liên tiếp nhau trong mỗi dòng
+  - Điền chỗ trống trong file .cu
+  - Phải chú ý kiểu dữ liệu của biến
+  - Phải viết hàm kiểm lỗi khi chạy hàm kernel (Slide 01 - trang 20)
+  - So sánh kết quả host vs. device dựa trên độ lệch
+    - Nếu độ lỗi nhỏ thì code đúng
+  - Báo cáo: Chạy với các kích thước khác nhau và thể hiện chương trình có thể bắt lỗi
+
+- Câu 2:
+  - Có khung rồi
+  - Bài toán tích chập
+    - Cơ bản là tổng có trọng số
+    - Tổng của các trọng số thường bằng 1 (không phải luôn đúng)
+  - Cần cài với kích thước filter linh động (3,5,7,v.v.)
+  - Nếu áp dụng lên ảnh RGB thì phải áp lên từng kênh màu
+  - Chú ý việc xử lý vùng biên của ảnh:
+    1. Không làm gì hết => Giảm chiều bức ảnh
+    2. Duplicate phần biên => Lab làm theo kiểu này
+  - Phải chú ý kiểu dữ liệu của biến
+  - Host phải dùng 4 vòng for:
+    - 2 vòng ngoài là duyệt từng pixel
+  - Kernel: dùng 2 vòng lặp trong
+```
+
+- Làm bài quiz (trong ngày hôm nay)
