@@ -114,7 +114,7 @@ __global__ void divergenceKernel4(const float *A, const float *B, float *C, int 
     }
 }
 
-void divergenceTest(const float *A, const float *B, float *C, int numElements, , dim3 blockSize=dim3(1))
+void divergenceTest(const float *A, const float *B, float *C, int numElements, dim3 blockSize=dim3(1))
 {
 	// Allocate the device input vector A,B, C
     float *d_A, *d_B, *d_C;

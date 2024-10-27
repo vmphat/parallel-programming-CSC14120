@@ -141,3 +141,29 @@
 ```
 
 - Làm bài quiz (trong ngày hôm nay)
+
+# Parallel Execution in CUDA (Part 1)
+
+## Ôn tập Quiz 2
+
+- Với mảng 3D, ta cắt lát các mặt phẳng và xếp theo thứ tự, mỗi mặt phẳng sẽ sắp xếp theo row-/column-major => `height * width * z + ...`
+
+## GPU compute architecture
+
+- Tốc độ truy xuất L1 Cache (của 1 SM) > Global Memory
+- Warp -> SIMT: Nhiều threads chạy cùng 1 câu lệnh (trên dữ liệu riêng của mỗi thread)
+- Warp divergence: hiện tượng rẽ nhánh theo threadIdx
+- Đoạn inactive: thực ra all threads cùng chạy nhưng nó chỉ tính chứ không ghi kết quả
+  - Ý tưởng: Tránh việc chạy đan xen
+
+```Bài tập
+| BlockSize | Num Blocks |  Num Threads | Occupancy |
+| --- | --- | --- | --- |
+| 32 | 32 | 1024 | 50% |
+| 768 | 2 | 1536 | 75% |
+```
+
+## Note
+
+- Tuần sau học về bài toán tối ưu cụ thể
+- Làm bài quiz (trong ngày hôm nay)
