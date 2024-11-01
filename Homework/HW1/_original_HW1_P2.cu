@@ -112,51 +112,6 @@ __global__ void blurImgKernel(uchar3 * inPixels, int width, int height,
 {
 	// TODO
 	
-    // Calculate the row and column index of the pixel
-    int r = blockIdx.y * blockDim.y + threadIdx.y;
-    int c = blockIdx.x * blockDim.x + threadIdx.x;
-
-	// Check if the pixel coordinate is within the image
-	if (r < height && c < width)
-	{
-		// Weighted sum for each color channel for current pixel
-		float sumRed   = 0.0f;
-		float sumGreen = 0.0f;
-		float sumBlue  = 0.0f;
-
-		// Loop through each coordinate in the filter
-		for (int filterR = 0; filterR < filterWidth; ++filterR)
-		{
-			for (int filterC = 0; filterC < filterWidth; ++filterC)
-			{
-				// Find relative image coordinate for current filter coordinate
-				int relativeImageR = r - filterWidth / 2 + filterR;
-				int relativeImageC = c - filterWidth / 2 + filterC;
-
-				// Clamp relative image coordinate to image border
-				int imageR = min(max(relativeImageR, 0), height - 1);
-				int imageC = min(max(relativeImageC, 0), width  - 1);
-
-				// Find the valid global image index
-				int imageIdx = imageR * width + imageC;
-
-				// Find the global filter index
-				int filterIdx = filterR * filterWidth + filterC;
-
-				// Update the weighted sum for each color channel
-				sumRed   += inPixels[imageIdx].x * filter[filterIdx];
-				sumGreen += inPixels[imageIdx].y * filter[filterIdx];
-				sumBlue  += inPixels[imageIdx].z * filter[filterIdx];
-			}
-		}
-
-		// Update the blurred output pixel with the weighted sum
-		// Reference: Struct `uchar3` definition - https://github.com/tpn/cuda-samples/blob/master/v8.0/include/vector_types.h
-		int i = r * width + c;
-		outPixels[i].x = (unsigned char)sumRed;
-		outPixels[i].y = (unsigned char)sumGreen;
-		outPixels[i].z = (unsigned char)sumBlue;
-	}
 }
 
 void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filterWidth, 
@@ -168,51 +123,7 @@ void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filte
 	if (useDevice == false)
 	{
 		// TODO
-		
-		// Loop through each pixel in the original image
-		for (int r = 0; r < height; ++r)
-		{
-			for (int c = 0; c < width; ++c)
-			{
-				// Weighted sum for each color channel for current pixel
-				float sumRed   = 0.0f;
-				float sumGreen = 0.0f;
-				float sumBlue  = 0.0f;
 
-				// Loop through each coordinate in the filter
-				for (int filterR = 0; filterR < filterWidth; ++filterR)
-				{
-					for (int filterC = 0; filterC < filterWidth; ++filterC)
-					{
-						// Find relative image coordinate for current filter coordinate
-						int relativeImageR = r - filterWidth / 2 + filterR;
-						int relativeImageC = c - filterWidth / 2 + filterC;
-
-						// Clamp relative image coordinate to image border
-						int imageR = min(max(relativeImageR, 0), height - 1);
-						int imageC = min(max(relativeImageC, 0), width  - 1);
-
-						// Find the valid global image index
-						int imageIdx = imageR * width + imageC;
-
-						// Find the global filter index
-						int filterIdx = filterR * filterWidth + filterC;
-
-						// Update the weighted sum for each color channel
-						sumRed   += inPixels[imageIdx].x * filter[filterIdx];
-						sumGreen += inPixels[imageIdx].y * filter[filterIdx];
-						sumBlue  += inPixels[imageIdx].z * filter[filterIdx];
-					}
-				}
-
-				// Update the blurred output pixel with the weighted sum
-				// Reference: Struct `uchar3` definition - https://github.com/tpn/cuda-samples/blob/master/v8.0/include/vector_types.h
-				int i = r * width + c;
-				outPixels[i].x = (unsigned char)sumRed;
-				outPixels[i].y = (unsigned char)sumGreen;
-				outPixels[i].z = (unsigned char)sumBlue;
-			}
-		}
 	}
 	else // Use device
 	{
@@ -223,37 +134,6 @@ void blurImg(uchar3 * inPixels, int width, int height, float * filter, int filte
 
 		// TODO
 
-		// Allocate device memories
-		uchar3 *d_inPixels, *d_outPixels;
-		float *d_filter;		
-		size_t numBytesImage  = width * height * sizeof(uchar3);
-		size_t numBytesFilter = filterWidth * filterWidth * sizeof(float);
-		CHECK(cudaMalloc((void **)&d_inPixels , numBytesImage ));
-		CHECK(cudaMalloc((void **)&d_outPixels, numBytesImage ));
-		CHECK(cudaMalloc((void **)&d_filter   , numBytesFilter));
-
-		// Copy data to device memories
-		CHECK(cudaMemcpy(d_inPixels, inPixels, numBytesImage , cudaMemcpyHostToDevice));
-		CHECK(cudaMemcpy(d_filter  , filter  , numBytesFilter, cudaMemcpyHostToDevice));
-
-		// Set grid size and call kernel (also check kernel error)
-		dim3 gridSize((width  - 1) / blockSize.x + 1, 
-					  (height - 1) / blockSize.y + 1);
-		blurImgKernel<<<gridSize, blockSize>>>(d_inPixels, width, height, d_filter, filterWidth, d_outPixels);
-		// Ensure all device operations are complete
-		// Reference: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html#group__CUDART__DEVICE_1g10e20b05a95f638a4071a655503df25d
-		CHECK(cudaDeviceSynchronize());
-		// Check for kernel launch errors
-		// Reference: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__ERROR.html#group__CUDART__ERROR
-		CHECK(cudaGetLastError());
-
-		// Copy result from device memories
-		CHECK(cudaMemcpy(outPixels, d_outPixels, numBytesImage, cudaMemcpyDeviceToHost));
-
-		// Free device memories
-		CHECK(cudaFree(d_inPixels));
-		CHECK(cudaFree(d_outPixels));
-		CHECK(cudaFree(d_filter));
 	}
 	timer.Stop();
 	float time = timer.Elapsed();

@@ -127,27 +127,6 @@ __global__ void convertRgb2GrayKernel(uint8_t * inPixels, int width, int height,
 	// TODO
     // Reminder: gray = 0.299*red + 0.587*green + 0.114*blue  
 
-    // Calculate the row and column index of the pixel
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-
-	// If the pixel coordinate is within the image
-    if (row < height && col < width)
-    {
-		// Get 1D offset for the grayscale image
-		int grayOffset = row * width + col;
-
-        // Get 1D offset for the RGB image
-		// Each pixel in RGB image has 3 values: red, green, and blue
-		int rgbOffset = 3 * grayOffset;
-		// Get red, green, and blue values of the pixel
-        uint8_t red   = inPixels[rgbOffset    ];
-        uint8_t green = inPixels[rgbOffset + 1];
-        uint8_t blue  = inPixels[rgbOffset + 2];
-
-		// Perform the rescaling and store the result
-        outPixels[grayOffset] = 0.299f*red + 0.587f*green + 0.114f*blue;
-    }
 }
 
 void convertRgb2Gray(uint8_t * inPixels, int width, int height,
@@ -179,33 +158,15 @@ void convertRgb2Gray(uint8_t * inPixels, int width, int height,
 		printf("GPU compute capability: %d.%d\n", devProp.major, devProp.minor);
 
 		// TODO: Allocate device memories
-		uint8_t *d_inPixels, *d_outPixels;
-		// Number of bytes for the RGB image and the grayscale image
-		size_t numBytesRgb  = width * height * 3 * sizeof(uint8_t);
-		size_t numBytesGray = width * height * sizeof(uint8_t);
-        CHECK(cudaMalloc((void **)&d_inPixels , numBytesRgb ));
-        CHECK(cudaMalloc((void **)&d_outPixels, numBytesGray));
 
 		// TODO: Copy data to device memories
-        CHECK(cudaMemcpy(d_inPixels, inPixels, numBytesRgb, cudaMemcpyHostToDevice));
 
 		// TODO: Set grid size and call kernel (remember to check kernel error)
-        dim3 gridSize((width  - 1) / blockSize.x + 1, 
-                      (height - 1) / blockSize.y + 1);
-        convertRgb2GrayKernel<<<gridSize, blockSize>>>(d_inPixels, width, height, d_outPixels);
-		// Ensure all device operations are complete
-		// Reference: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__DEVICE.html#group__CUDART__DEVICE_1g10e20b05a95f638a4071a655503df25d
-		CHECK(cudaDeviceSynchronize());
-		// Check for kernel launch errors
-		// Reference: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__ERROR.html#group__CUDART__ERROR
-		CHECK(cudaGetLastError());
 
 		// TODO: Copy result from device memories
-        CHECK(cudaMemcpy(outPixels, d_outPixels, numBytesGray, cudaMemcpyDeviceToHost));
 
 		// TODO: Free device memories
-        CHECK(cudaFree(d_inPixels));
-        CHECK(cudaFree(d_outPixels));
+
 	}
 	timer.Stop();
 	float time = timer.Elapsed();
