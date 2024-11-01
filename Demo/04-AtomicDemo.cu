@@ -6,6 +6,9 @@ __global__ void naive_incr(int *value) {
 	*value = temp;
 }
 
+// Atomic là quy trình mà 1 thread thực hiện
+// thì các thread khác phải đợi 
+// VD: Read-Modify-Write
 __global__ void atomic_incr(int *value) {
 	atomicAdd(value,1);
 }

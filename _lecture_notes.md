@@ -167,3 +167,56 @@
 
 - Tuần sau học về bài toán tối ưu cụ thể
 - Làm bài quiz (trong ngày hôm nay)
+
+# Parallel Execution in CUDA (Part 2)
+
+- Ôn tập Quiz 3
+
+## Overview
+
+- Sau này project cũng sẽ trải qua các giai đoạn:
+  1. Phân tích task
+  2. Cài tuần tự
+  3. Cài song song
+     - Song song version 1
+     - Song song version 2
+     - Song song version 3
+     - ...
+- Stride: bước nhảy
+- Tài liệu tham khảo các hàm atomic trong CUDA: **CUDA C++ Programming Guide**
+  => 1 report do NVIDIA cung cấp
+- Ý tưởng tráng phân kỳ là dồn các thread chạy về 1 bên, thread không chạy về 1 bên
+  - Tuy nhiên, số lượng thread cần chạy là không đổi
+
+## Note
+
+- Cài đặt ý tưởng kernel version 3 vào lab 2
+- Cài đặt nhân ma trận bằng CUDA trong lab
+  - Dùng 1 vòng lặp bên trong cùng
+
+```
+- Câu 1:
+  - Cài 3 hàm kernel để thực hiện reduction
+  - Cần cài các bước cấp phát, copy, gọi hàm, free
+  - Chạy trong file notebook, tìm cách lý giải kết quả, nhận xét
+  - Dùng `nvprof` để xem thông tin về quá trình thực thi để có chiến lược cài đặt hiệu quả hơn
+    - VD: Thời gian chạy kernel là rất ít so với thời gian copy dữ liệu qua lại
+    - Ta sẽ nhận xét từ bảng thông báo này, chỉ cần để ý **GPU activites** thôi
+  - Chạy với blocksize khác nhau rồi điền bảng + nhận xét
+- Câu 2:
+  - Cài đặt bài toán nhân 2 ma trận
+  - Cài 2 hàm kernel:
+    - Version 1: Đơn giản, dùng global memory
+    - Version 2: Dùng shared memory
+  - Dùng `nvprof` để xem chi tiết thực thi và nhận xét
+  - Phải trả lời thêm câu hỏi trên notebook
+```
+
+- Lab làm trong 2 tuần
+- Tuần này không có Quiz
+- Đề đồ án:
+  - Cài đặt mạng Neuron (bình thường) cho bài toán **Fashion MNIST** bằng C và song song hóa bằng CUDA
+  - Bản chất là nhân ma trận
+  - Nội dung chi tiết thầy sẽ gửi qua document sau
+  - Có thể tìm hiểu cách cài mạng Neuron bằng C trước
+  - Làm đồ án theo nhóm 2 hoặc 3
