@@ -190,12 +190,12 @@
 
 ## Note
 
+### Lab 2
+
 - Cài đặt ý tưởng kernel version 3 vào lab 2
 - Cài đặt nhân ma trận bằng CUDA trong lab
   - Dùng 1 vòng lặp bên trong cùng
-
-```
-- Câu 1:
+- **Câu 1**:
   - Cài 3 hàm kernel để thực hiện reduction
   - Cần cài các bước cấp phát, copy, gọi hàm, free
   - Chạy trong file notebook, tìm cách lý giải kết quả, nhận xét
@@ -203,20 +203,52 @@
     - VD: Thời gian chạy kernel là rất ít so với thời gian copy dữ liệu qua lại
     - Ta sẽ nhận xét từ bảng thông báo này, chỉ cần để ý **GPU activites** thôi
   - Chạy với blocksize khác nhau rồi điền bảng + nhận xét
-- Câu 2:
+- **Câu 2**:
   - Cài đặt bài toán nhân 2 ma trận
+  - Host dùng 3 vòng lặp
   - Cài 2 hàm kernel:
     - Version 1: Đơn giản, dùng global memory
     - Version 2: Dùng shared memory
   - Dùng `nvprof` để xem chi tiết thực thi và nhận xét
   - Phải trả lời thêm câu hỏi trên notebook
+- Lab làm trong 2 tuần
+
+### Quiz
+
+- Tuần này không có Quiz
+
+### Đề đồ án
+
+- Cài đặt mạng Neuron (bình thường) cho bài toán **Fashion MNIST** bằng C và song song hóa bằng CUDA
+- Bản chất là nhân ma trận
+- Nội dung chi tiết thầy sẽ gửi qua document sau
+- Có thể tìm hiểu cách cài mạng Neuron bằng C trước
+- Làm đồ án theo nhóm 2 hoặc 3
+
+# Memory architecture in CUDA (Part 1)
+
+- Mục tiêu là cố gắng giảm sự phụ thuộc vào vùng nhớ global (GMEM)
+  - Tăng tốc độ truy xuất
+- Ta thao tác nhiều nhất với shared memory (phức tạp nhất)
+
+## Note
+
+- Tiếp tục làm HW
+- Bài sau học về cách dùng bộ nhớ hiệu quả: tập trung và share (SMEM) và global (GMEM)
+- Làm bài Quiz
+
+## Quiz 4
+
+Question 1:
+
+```
+NO. In matrix addition, each thread typically reads one element from each of the two matrices (A and B) to compute the corresponding element in the result matrix (C). However, since each element is accessed by only one thread and is not reused by other threads, shared memory does not provide any global memory bandwidth reduction for this operation.
 ```
 
-- Lab làm trong 2 tuần
-- Tuần này không có Quiz
-- Đề đồ án:
-  - Cài đặt mạng Neuron (bình thường) cho bài toán **Fashion MNIST** bằng C và song song hóa bằng CUDA
-  - Bản chất là nhân ma trận
-  - Nội dung chi tiết thầy sẽ gửi qua document sau
-  - Có thể tìm hiểu cách cài mạng Neuron bằng C trước
-  - Làm đồ án theo nhóm 2 hoặc 3
+Question 2:
+
+```
+Using shared memory instead of registers can be valuable when we want to share common input values among threads in a block. Shared memory allows multiple threads in a block to load a value from global memory only once and then access it from shared memory, reducing the global memory bandwidth consumption.
+If each thread instead loaded the same value directly from global memory into its own register, the global memory would be accessed multiple times, one for each thread. Since registers are private to each thread, they do not allow sharing. And in the case of matrix multiplication, we need to access the same data more than once for each thread. By using shared memory, we can significantly reduce the number of accesses to global memory, resulting in faster and more efficient computation.
+```
+
