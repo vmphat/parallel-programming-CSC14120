@@ -125,7 +125,7 @@ void addMat(int *in1, int *in2, int nRows, int nCols,
 			addMatKernel2<<<gridSize, blockSize >>>(d_in1, d_in2, nRows, nCols, d_out);
 
 		CHECK(cudaDeviceSynchronize());
-		timer.St	op();
+		timer.Stop();
 		
 		// TODO: Copy result from device memory
         CHECK(cudaMemcpy(out, d_out, nBytes, cudaMemcpyDeviceToHost));

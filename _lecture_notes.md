@@ -252,3 +252,49 @@ Using shared memory instead of registers can be valuable when we want to share c
 If each thread instead loaded the same value directly from global memory into its own register, the global memory would be accessed multiple times, one for each thread. Since registers are private to each thread, they do not allow sharing. And in the case of matrix multiplication, we need to access the same data more than once for each thread. By using shared memory, we can significantly reduce the number of accesses to global memory, resulting in faster and more efficient computation.
 ```
 
+## Memory note
+
+- Truy xuất các vị trí liên tiếp trên bộ nhớ global (bursts) có thể tăng tốc độ truy xuất
+
+# Memory architecture in CUDA (Part 2)
+
+- Bài này tập trung vào cách dùng bộ nhớ một cách hiệu quả
+- Khi đọc dữ liệu từ bộ nhớ, thường là đọc theo từng khối "burst section"
+
+## GMEM
+
+- Nếu truy xuất bộ nhớ liên tiếp nhau thì tốn thêm nhiều lần đọc
+- Các thread cùng 1 warp sẽ thực thi 1 câu lệnh cùng lúc
+- Để load tốt nhất:
+  1. Các thread trong warp load phần tử liên tiếp (coalesce : hợp nhất)
+  2. Thằng đầu tiên trong warp load phần tử đầu tiên trong sector (align : căn lề)
+- Viết Struct of Array sẽ hiệu quả hơn cho lập trình song song
+
+## SMEM
+
+- Shared memory có nguyên tắc đọc khác so với global
+  => Không coalesce vẫn nhanh
+
+## Note
+
+### Lab 3
+
+- Câu 1:
+  - Áp dụng các loại vùng nhớ khác để cải thiện tốc độ Convolution 2D
+  - Cần cài đặt 3 hàm kernel:
+    - Version 1: Dùng global memory (đã viết)
+    - Version 2: Dùng Shared memory (SMEM)
+      - Lúc đầu copy phần xanh lợt vào share
+      - Ta cần phần chia công việc để một vài thread trong block copy nhiều dữ liệu hơn ở vùng biên
+    - Version 3: Dùng Constant memory (CMEM)
+      - Nó sẽ cải thiện kết quả
+- Câu 2:
+  - Liên quan đến luồng trong CUDA, tuần sau sẽ học
+
+### Quiz 5
+
+- Làm quiz
+
+### Project
+
+- Đăng ký nhóm làm đồ án
