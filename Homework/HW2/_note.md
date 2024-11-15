@@ -1,3 +1,4 @@
+Dưới đây là toàn bộ mã nguồn của chương trình nhân hai ma trận các số thực trong file "HW2_P2.cu":
 #include <stdio.h>
 
 #define CHECK(call)\
@@ -127,7 +128,7 @@ __global__ void matrix_multiplication_kernel2(float* A, float* B, float* C, int 
 	{
 		// Load one tile of matrix A and B from global memory
 		// into shared memory
-		if (row < m && (t * TILE_WIDTH + threadIdx.x) < n)
+		if (row < m && t * TILE_WIDTH + threadIdx.x < n)
 		{
 			s_A[threadIdx.y][threadIdx.x] = A[row * n + t * TILE_WIDTH + threadIdx.x];
 		}
@@ -136,7 +137,7 @@ __global__ void matrix_multiplication_kernel2(float* A, float* B, float* C, int 
 			s_A[threadIdx.y][threadIdx.x] = 0.0f;
 		}
 
-		if ((t * TILE_WIDTH + threadIdx.y) < n && col < k)
+		if (col < k && t * TILE_WIDTH + threadIdx.y < n)
 		{
 			s_B[threadIdx.y][threadIdx.x] = B[(t * TILE_WIDTH + threadIdx.y) * k + col];
 		}
@@ -335,3 +336,14 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+Dựa vào mã nguồn đã được cung cấp, bạn hãy giúp tôi trả lời các câu hỏi sau:
+
+- For Basic Matrix Multipication (`matrix_multiplication_kernel1`):
+  1. How many floating operations are being performed in your matrix multiply kernel? Explain
+  2. How many global memory reads are being performed by your kernel? Explain
+  3. How many global memory writes are being performed by your kernel? Explain.
+- For Tiled Matrix Multipication (`matrix_multiplication_kernel2`):
+  1. How many floating operations are being performed in your matrix multiply kernel? Explain
+  2. How many global memory reads are being performed by your kernel? Explain
+  3. How many global memory writes are being performed by your kernel? Explain
