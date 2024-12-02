@@ -64,7 +64,7 @@ void squareVec(float* in, float* out, int n, bool useDevice=false)
 		CHECK(cudaStreamSynchronize(stream1));
 		cudaStreamDestroy(stream1);
 		CHECK(cudaStreamSynchronize(stream2));
-		cudaStreamDestroy(stream2);		
+		cudaStreamDestroy(stream2);
 	}
 }
 		

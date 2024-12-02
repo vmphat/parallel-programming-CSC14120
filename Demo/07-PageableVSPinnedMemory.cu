@@ -79,8 +79,8 @@ void TransferMatrix(int *in1, int nRows, int nCols, int kernelType=1)
 
 	int * d_in1;
 	if (kernelType == 1)
-	{
-		in1 = (int *)malloc(nBytes);
+	{// Bandwidth: 4.273 GBps
+		in1 = (int *)malloc(nBytes); // Pageable memory
 		InitMatrix(in1,nRows,nCols);
 
 		CHECK(cudaMalloc(&d_in1, nBytes));
@@ -93,8 +93,8 @@ void TransferMatrix(int *in1, int nRows, int nCols, int kernelType=1)
 		free(in1);		
 	}
 	else
-	{	
-		CHECK(cudaMallocHost(&in1,nBytes));
+	{// Bandwidth: 10.762 GBps (gấp đôi so với Pageable memory)
+		CHECK(cudaMallocHost(&in1,nBytes)); // Pinned memory
 		InitMatrix(in1,nRows,nCols);
 		
 		CHECK(cudaMalloc(&d_in1, nBytes));

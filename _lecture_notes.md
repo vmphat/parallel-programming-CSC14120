@@ -298,3 +298,50 @@ If each thread instead loaded the same value directly from global memory into it
 ### Project
 
 - Đăng ký nhóm làm đồ án
+
+# CUDA Streams
+
+- Bắt đầu từ page 21 slide 07
+
+## Introduction
+
+- Cố gắng overlap, song song cả 3 việc: host2device, kernel-run, device2host
+  => Mỗi khối dữ liệu phải làm tuần tự nhưng có thể song song trên nhiều khối
+- Tình huống nhiều kernel chạy song song ít khi sử dụng trong thực tế
+- host2device và device2host luôn luôn làm tuần tự
+- Điều kiện để các tác vụ có thể chạy song song, overlap:
+  - Các task phải độc lập với nhau
+  - Có đủ tài nguyên phần cứng cho các tác vụ này
+
+## CUDA Stream
+
+- CUDA Stream là một hàng đợi các tác vụ của device, cơ chế FIFO
+  - Các task cùng stream được device thực thi tuần tự
+  - Các task ở các stream khác nhau được thực thi song song
+- Nếu các stream khác đang chạy thì stream-0 không chạy được (synchronize)
+  - Stream-0 chạy thì các stream khác không được chạy
+  - Nếu các stream khác chạy thì stream-0 phải chờ chúng chạy xong thì mới chạy được
+
+## Host device data transfer
+
+-
+
+## Note
+
+### Lab - Câu 2
+
+- Cần viết tổng quát cho n streams, đưa từng stream lần lượt vào
+  - Phải chú ý phần tử cuối cùng, cần xử lý thêm 1 chút vì nó có thể bị lẻ
+- Lúc send các jobs vào stream thì ta cần dùng vòng lặp
+  - Ta sẽ cần tạo một mảng các stream
+- Trong phần báo cáo phải thể hiện được sự overlap
+  - Ta sẽ dùng chương trình để visualize: NVIDIA Nsight System
+  - Ta chỉ quan tâm đến thông số nào có thể visualize lên được
+- Down file report về máy, phiên bản Nsight System của máy cá nhân phải cao hơn Colab
+- Ở đây ta sẽ quan tâm đến CUDA Hardware, các stream, phần ở cuối
+  - Tô chuột, chuột phải và zoom ra
+- Đoạn Host2Divice chiếm phần lớn thời gian, hàm kernel chiếm rất ít, show hình vào file notebook
+
+### Quiz
+
+- Tuần này không có quiz
