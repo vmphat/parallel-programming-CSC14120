@@ -81,74 +81,21 @@ void addVec(int *in1, int *in2, int n,
         size_t nBytes = n * sizeof(int);
 
 		// TODO: Allocate device memory regions
-		int *d_in1, *d_in2, *d_out;
-		CHECK(cudaMalloc(&d_in1, nBytes));
-		CHECK(cudaMalloc(&d_in2, nBytes));
-		CHECK(cudaMalloc(&d_out, nBytes));
 
         // TODO: Create "nStreams" device streams
-		// Create an array of "nStreams" streams on the device
-		cudaStream_t *streams = (cudaStream_t *)malloc(nStreams * sizeof(cudaStream_t));
-		// Create each stream in the array
-		for (int i = 0; i < nStreams; ++i)
-		{
-			CHECK(cudaStreamCreate(&streams[i]));
-		}
 
         GpuTimer timer;
         timer.Start();
 
         // TODO: Send jobs (H2D, kernel, D2H) to device streams 
-		for (int i = 0; i < nStreams; ++i)
-		{
-			// Number of elements to be processed by the stream
-			int streamSize = (n - 1) / nStreams + 1;
-			// Calculate the offset of the current stream
-			int offset = i * streamSize;
-
-			// Modify the streamSize for the last stream
-			if (offset + streamSize > n)
-			{
-				streamSize = n - offset;
-			}
-
-			// Number of bytes to be processed by the stream
-			size_t streamBytes = streamSize * sizeof(int);
-
-			// Copy data from host to device for each part asynchronously
-			CHECK(cudaMemcpyAsync(&d_in1[offset], &in1[offset], streamBytes, cudaMemcpyHostToDevice, streams[i]));
-			CHECK(cudaMemcpyAsync(&d_in2[offset], &in2[offset], streamBytes, cudaMemcpyHostToDevice, streams[i]));
-
-			// Calculate the number of blocks needed for each stream
-			dim3 gridSize((streamSize - 1) / blockSize.x + 1);
-
-			// Launch the kernel function for each stream asynchronously
-			addVecKernel<<<gridSize, blockSize, 0, streams[i]>>>(&d_in1[offset], &d_in2[offset], streamSize, &d_out[offset]);
-			CHECK(cudaGetLastError()); // Check if there is any error when launching the kernel
-
-			// Copy data from device to host for each part asynchronously
-			CHECK(cudaMemcpyAsync(&out[offset], &d_out[offset], streamBytes, cudaMemcpyDeviceToHost, streams[i]));
-		}
 
         timer.Stop();
         float time = timer.Elapsed();
         printf("Processing time of all device streams: %f ms\n\n", time);
 
         // TODO: Destroy device streams
-		for (int i = 0; i < nStreams; ++i)
-		{
-			// Make sure that the stream is finished
-			CHECK(cudaStreamSynchronize(streams[i]));
-			// Destroy the stream
-			CHECK(cudaStreamDestroy(streams[i]));
-		}
-		// Free the array of streams
-		free(streams);
 
         // TODO: Free device memory regions
-		CHECK(cudaFree(d_in1));
-		CHECK(cudaFree(d_in2));
-		CHECK(cudaFree(d_out));
 	}
 }
 
