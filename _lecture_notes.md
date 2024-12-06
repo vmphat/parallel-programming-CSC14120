@@ -324,16 +324,23 @@ If each thread instead loaded the same value directly from global memory into it
 
 ## Host device data transfer
 
--
+- Pageable memory: Cấp phát bằng `malloc()`
+- Thí nghiệm MatAdd trên các vùng nhớ khác nhau:
+  - Pageable: 80ms
+  - Pinned: 40ms
+  - Mapped memory: 22ms
+  - Unified memory (Vùng nhớ hợp nhất): 70ms (chỉ nhanh hơn Pageable)
+  - Unified memory + Advise: 55ms
+- Page faults: là số lượng page chưa có dữ liệu, cần copy từ host sang device
 
 ## Note
 
 ### Lab - Câu 2
 
-- Cần viết tổng quát cho n streams, đưa từng stream lần lượt vào
+- Cần viết tổng quát cho n streams, đưa từng stream lần lượt vào mảng
   - Phải chú ý phần tử cuối cùng, cần xử lý thêm 1 chút vì nó có thể bị lẻ
 - Lúc send các jobs vào stream thì ta cần dùng vòng lặp
-  - Ta sẽ cần tạo một mảng các stream
+  - **Ta sẽ cần tạo một mảng các stream**
 - Trong phần báo cáo phải thể hiện được sự overlap
   - Ta sẽ dùng chương trình để visualize: NVIDIA Nsight System
   - Ta chỉ quan tâm đến thông số nào có thể visualize lên được
@@ -345,3 +352,30 @@ If each thread instead loaded the same value directly from global memory into it
 ### Quiz
 
 - Tuần này không có quiz
+
+# Prefix sum (Scan)
+
+- Ý tưởng: Xây dựng các cây reduce tận dụng lại kết quả của nhau
+- Thuật efficient sẽ nói vào tuần sau
+
+## Note
+
+### Thời gian học lý thuyết
+
+- Tuần sau nghỉ do thầy đi công tác, tuần dự trữ sẽ học 2 buổi
+  - Nên làm project trong tuần này
+
+### Lab
+
+- Còn 1 bài Lab nữa, ra mắt vào tuần dự trữ
+
+### Project
+
+- Khoảng 2 tuần sau tuần dự trữ là deadline của project
+- Các nhóm sẽ trình bày và thầy vấn đáp sẽ hỏi, làm offline (có thể làm phòng I81)
+- Nội dung thực hành sẽ dựa theo slide của thầy thực hành
+- Slide của thầy lý thuyết là hướng dẫn cách viết report (sẽ giảng vào buổi học lý thuyết cuối cùng)
+
+### Quiz
+
+- Hôm nay không có quiz

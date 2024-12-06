@@ -90,11 +90,11 @@ void addMat(int *in1, int *in2, int nRows, int nCols,
 
 		// TODO: Allocate device memories
         int * d_in1, * d_in2, * d_out;
-		cudaHostGetDevicePointer(&d_in1, in1, 0);
-		cudaHostGetDevicePointer(&d_in2, in2, 0);
-		cudaHostGetDevicePointer(&d_out, out, 0);		
+		CHECK(cudaHostGetDevicePointer(&d_in1, in1, 0));
+		CHECK(cudaHostGetDevicePointer(&d_in2, in2, 0));
+		CHECK(cudaHostGetDevicePointer(&d_out, out, 0));
 
-		// TODO: khogn can cuda memcpy
+		// TODO: Khong can cuda memcpy
 
 		// TODO: Set grid size and call kernel
         dim3 gridSize((nCols - 1) / blockSize.x + 1, 
