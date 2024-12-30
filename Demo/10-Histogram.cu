@@ -49,7 +49,7 @@ struct GpuTimer
 };
 
 /*
-Not use SMEM.
+Not use GMEM.
 */
 __global__ void computeHistKernel1(int * in, int n, int * hist, int nBins)
 {
@@ -70,6 +70,7 @@ __global__ void computeHistKernel2(int * in, int n, int * hist, int nBins)
     for (int bin = threadIdx.x; bin < nBins; bin += blockDim.x)
         s_hist[bin] = 0;
     __syncthreads();
+    // Tính mảng histogram cục bộ
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n)
         atomicAdd(&s_hist[in[i]], 1);

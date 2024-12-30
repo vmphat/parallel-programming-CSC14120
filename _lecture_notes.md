@@ -353,7 +353,7 @@ If each thread instead loaded the same value directly from global memory into it
 
 - Tuần này không có quiz
 
-# Prefix sum (Scan)
+# Prefix sum (scan) - Part 1
 
 - Ý tưởng: Xây dựng các cây reduce tận dụng lại kết quả của nhau
 - Thuật efficient sẽ nói vào tuần sau
@@ -379,3 +379,93 @@ If each thread instead loaded the same value directly from global memory into it
 ### Quiz
 
 - Hôm nay không có quiz
+
+# Prefix sum (scan) - Part 2
+
+- Ứng dụng: radixa-sort, sort theo cơ số
+- Thứ tự giữa các giá trị bằng nhau có thể thay đổi
+- Ta sẽ sort theo các bit (dạng nhị phân)
+  - Vì lấy máy tính lấy bit sẽ nhanh hơn giá trị thực sự
+- Slide 8: Xem ảnh điện thoại
+  - if binIn[i] is 0: rank = i - nOnesBefore[i]
+  - if binIn[i] is 1: rank = nZeros + nOnesBefore[i]
+    - With nZeros = n - nOnesBefore[n-1] - binIn[n-1]
+  - binOut[rank[i]] = binIn[i]
+- Sequential code:
+
+```
+Mảng bits:
+Tính nOnesBefore
+Tính rank
+Bước swap chỉ là đổi con trỏ, không tốn nhiều chi phí
+```
+
+- Muốn các block đợi nhau thì có thể dùng cờ
+
+## Note
+
+### Lab 4
+
+- Cung cấp sẵn radix-sort tuần tự
+  - Cần cài song song
+- Tự viết thêm các hàm khác,
+  - Tự chế ra hàm kernel và tự gọi
+- Cài đặt radix-sort song song, scan global với 1 kernel duy nhất
+- Cài đặt radix-sort song song, scan global với 2 kernel
+  - Xem code trên slide08 & 09, sẽ cần bổ sung thêm phần còn thiếu
+- Deadline: khoảng 3 tuần
+
+### Hôm thứ 6
+
+- Buổi cuối
+  - Thầy sẽ dặn nội dung cần trình bày trong đồ án
+
+# Parallel Histogram
+
+- Bài toán histogram:
+  - Thể hiện sự phân bố của 1 biến liên tục
+  - Rút trích đặc trưng dựa vào histogram (ví dụ: ảnh)
+
+# Project: Parallel and optimize an application
+
+- Những phần cần trình bày trong báo cáo cuối kỳ
+- Phân tích:
+  - Phần nào nên được song song hóa, tối ưu hóa
+  - Chỉ chọn những phần quan trọng để song song hóa
+  - Nếu bước nào không tốn nhiều thời gian thì không cần song song hóa, và có thể dùng tuần tự
+  - Ta sẽ đo thời gian chạy của từng bước để xác định phần nào cần tối ưu hóa
+- Thiết kế:
+  - Thiết kế song song hóa như thế nào
+- Cài đặt và chạy thử
+- Đánh giá:
+  - Kiểm tra xem ý tưởng có hoạt động hay không
+  - Nếu không thì giải thích tại sao? Tìm cách lý giải.
+- Các thuật toán song song quan trọng nhất là:
+  1. Phải đúng đắn
+  2. Chạy nhanh hơn (sẽ tốt hơn)
+- Mỗi cycle là 1 version, ta sẽ cần dùng nhiều cycle trong đồ án
+  - Bắt đầu bằng mô hình tuần tự
+  - Rồi chuyển qua song song, phiên bản naive
+  - Tiếp tục cải tiến các phiên bản song song
+- Nhớ ghi rõ nguồn tham khảo
+- Báo cáo cần trình bày toàn bộ tất cả phiên bản
+- Mỗi phiên bản cần có số liệu chứng minh
+
+## Colab notebook
+
+- Viết document trực tiếp vào notebook
+  - Minh họa ý tưởng về cách xử lý
+- Xem ghi chú trong slide
+
+## Note
+
+### Lab 4
+
+- Làm lab 4
+
+### Đồ án
+
+- Nên kết hợp các kernel thành 1 hàm kernel duy nhất
+  - Ví dụ: matmul + relu
+- Dùng thêm stream thì phải thay đổi cơ chế sync
+
